@@ -25,7 +25,9 @@ public class ISupervisor extends javax.swing.JFrame {
     private ArrayList<String> cambiaColor = new ArrayList<>(Arrays.asList("jpnlDinamico", "jlblSupervisor", "jlblNombres", "jpnlCerrarSesion"));
 
     public ISupervisor(boolean modoOscuro) throws SQLException {
-        conexion.getInstance();
+        if (Utils.dataBase[0]) {
+            conexion.getInstance();
+        }
         initComponents();
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);

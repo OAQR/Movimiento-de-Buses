@@ -28,11 +28,14 @@ public class ModificarConductor extends javax.swing.JFrame {
             "jsepConfirmeContraseña", "jsepEmpresaSlogan", "jpnlModificar"));
 
     public ModificarConductor(boolean modoOscuro, PreparedStatement ps) throws SQLException {
-        conexion.getInstance();
+        if (Utils.dataBase[0]) {
+            conexion.getInstance();
+            rellenoDeCampos(ps);
+        }
         initComponents();
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);
-        rellenoDeCampos(ps);
+
     }
 
     private void CambioColor(boolean modoOscuro) {
@@ -906,24 +909,25 @@ public class ModificarConductor extends javax.swing.JFrame {
 
             if (camposValidos) {
                 try {
-                    PreparedStatement psConductor = conexion.cambiarContraseña("C");
-                    psConductor.setString(1, new String(jpswContraseña.getPassword()));
-                    System.out.println(jtxtID.getText());
-                    psConductor.setString(2, new String(jtxtID.getText()));
-                    psConductor.executeUpdate();
-                    psConductor.close();
-                    
-                    PreparedStatement psPersona = conexion.persona("UPDATE Persona SET nombre = ?, apellido = ?, correo = ?, numero_telefonico = ?, DNI = ?, edad = ? WHERE idConductor = ?");
-                    psPersona.setString(1, jtxtNombre.getText());
-                    psPersona.setString(2, jtxtApellido.getText());
-                    psPersona.setString(3, jtxtCorreo.getText());
-                    psPersona.setInt(4, Integer.parseInt(jtxtNumeroTelefonico.getText()));
-                    psPersona.setInt(5, Integer.parseInt(jtxtDNI.getText()));
-                    psPersona.setInt(6, Integer.parseInt(jtxtEdad.getText()));
-                    psPersona.setString(7, jtxtID.getText());
-                    psPersona.executeUpdate();
-                    psPersona.close();
+                    if (Utils.dataBase[0]) {
+                        PreparedStatement psConductor = conexion.cambiarContraseña("C");
+                        psConductor.setString(1, new String(jpswContraseña.getPassword()));
+                        System.out.println(jtxtID.getText());
+                        psConductor.setString(2, new String(jtxtID.getText()));
+                        psConductor.executeUpdate();
+                        psConductor.close();
 
+                        PreparedStatement psPersona = conexion.persona("UPDATE Persona SET nombre = ?, apellido = ?, correo = ?, numero_telefonico = ?, DNI = ?, edad = ? WHERE idConductor = ?");
+                        psPersona.setString(1, jtxtNombre.getText());
+                        psPersona.setString(2, jtxtApellido.getText());
+                        psPersona.setString(3, jtxtCorreo.getText());
+                        psPersona.setInt(4, Integer.parseInt(jtxtNumeroTelefonico.getText()));
+                        psPersona.setInt(5, Integer.parseInt(jtxtDNI.getText()));
+                        psPersona.setInt(6, Integer.parseInt(jtxtEdad.getText()));
+                        psPersona.setString(7, jtxtID.getText());
+                        psPersona.executeUpdate();
+                        psPersona.close();
+                    }
                     Utils.cambioDeJframe(this, new RegistroConductor(!modoOscuro));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

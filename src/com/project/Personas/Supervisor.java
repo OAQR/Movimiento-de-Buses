@@ -19,7 +19,7 @@ public class Supervisor extends Persona{
     }
 
     public Supervisor(int dni, String nombre, String apellido, String correo, int numero_telefonico, int edad) {
-        super(dni, nombre, apellido, correo, numero_telefonico, edad);
+        super(nombre, apellido, correo, numero_telefonico, edad, dni, correo, correo);
         this.ID_Supervisor = ID_Supervisor;
         Registro registro = new Registro();
         registro.agregarPersona(this);

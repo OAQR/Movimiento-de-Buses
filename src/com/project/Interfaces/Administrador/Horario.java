@@ -21,7 +21,9 @@ public class Horario extends javax.swing.JFrame {
     private ArrayList<String> cambiaColor = new ArrayList<>(Arrays.asList("jlblHorario", "jpnlDinamico"));
 
     public Horario(boolean modoOscuro) throws SQLException {
-        conexion.getInstance();
+        if (Utils.dataBase[0]) {
+            conexion.getInstance();
+        }
         initComponents();
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);

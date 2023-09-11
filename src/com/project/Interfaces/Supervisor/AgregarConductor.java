@@ -28,11 +28,14 @@ public class AgregarConductor extends javax.swing.JFrame {
             "jsepConfirmeContraseña", "jsepEmpresaSlogan", "jpnlAgregar"));
 
     public AgregarConductor(boolean modoOscuro) throws SQLException {
-        conexion.getInstance();
         initComponents();
+        if (Utils.dataBase[0]) {
+            conexion.getInstance();
+            jtxtID.setText(Utils.generarID("C", "SELECT MAX(idConductor) FROM Conductor"));
+        } else jtxtID.setText(Utils.generarID("C", ""));
+        
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);
-        jtxtID.setText(Utils.generarID("C", "SELECT MAX(idConductor) FROM Conductor"));
     }
 
     private void CambioColor(boolean modoOscuro) {
@@ -871,37 +874,39 @@ public class AgregarConductor extends javax.swing.JFrame {
     private void jlblAgregarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlblAgregarMouseClicked
         try {
             jlblAgregar.requestFocus();
-            
+
             String[] campos = {"Nombre", "Apellido", "Correo", "NumeroTelefonico", "DNI", "Edad", "Contraseña", "ConfirmeContraseña"};
             String[] text = {"nombre", "apellido", "correo electrónico", "número telefónico", "DNI", "edad", "contraseña", "confirmeContraseña"};
-            
+
             boolean camposValidos = Utils.validarCamposConductor(campos, text, this, modoOscuro);
-            
+
             if (camposValidos) {
                 try {
-                    PreparedStatement psConductor = conexion.tipoPersona("C");
-                    psConductor.setString(1, jtxtID.getText());
-                    psConductor.setString(2, new String(jpswContraseña.getPassword()));
-                    psConductor.executeUpdate();
-                    psConductor.close();
+                    if (Utils.dataBase[0]) {
+                        PreparedStatement psConductor = conexion.tipoPersona("C");
+                        psConductor.setString(1, jtxtID.getText());
+                        psConductor.setString(2, new String(jpswContraseña.getPassword()));
+                        psConductor.executeUpdate();
+                        psConductor.close();
 
-                    PreparedStatement psPersona = conexion.persona("INSERT INTO Persona (nombre, apellido, correo, numero_telefonico, DNI, edad, tipo, idConductor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-                    psPersona.setString(1, jtxtNombre.getText());
-                    psPersona.setString(2, jtxtApellido.getText());
-                    psPersona.setString(3, jtxtCorreo.getText());
-                    psPersona.setInt(4, Integer.parseInt(jtxtNumeroTelefonico.getText()));
-                    psPersona.setInt(5, Integer.parseInt(jtxtDNI.getText()));
-                    psPersona.setInt(6, Integer.parseInt(jtxtEdad.getText()));
-                    psPersona.setString(7, "Conductor");
-                    psPersona.setString(8, jtxtID.getText());
-                    psPersona.executeUpdate();
-                    psPersona.close();
-                    
+                        PreparedStatement psPersona = conexion.persona("INSERT INTO Persona (nombre, apellido, correo, numero_telefonico, DNI, edad, tipo, idConductor) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+                        psPersona.setString(1, jtxtNombre.getText());
+                        psPersona.setString(2, jtxtApellido.getText());
+                        psPersona.setString(3, jtxtCorreo.getText());
+                        psPersona.setInt(4, Integer.parseInt(jtxtNumeroTelefonico.getText()));
+                        psPersona.setInt(5, Integer.parseInt(jtxtDNI.getText()));
+                        psPersona.setInt(6, Integer.parseInt(jtxtEdad.getText()));
+                        psPersona.setString(7, "Conductor");
+                        psPersona.setString(8, jtxtID.getText());
+                        psPersona.executeUpdate();
+                        psPersona.close();
+                    }
+
                     Utils.cambioDeJframe(this, new RegistroConductor(!modoOscuro));
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                
+
             }
         } catch (Exception ex) {
             Logger.getLogger(AgregarConductor.class.getName()).log(Level.SEVERE, null, ex);

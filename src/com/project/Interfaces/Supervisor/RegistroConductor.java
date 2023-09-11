@@ -23,7 +23,9 @@ public class RegistroConductor extends javax.swing.JFrame {
     private ArrayList<String> cambiaColor = new ArrayList<>(Arrays.asList("jpnlDinamico", "jpnlAgregar", "jpnlModificar", "jpnlBorrar", "jpnlImprimir"));
 
     public RegistroConductor(boolean modoOscuro) throws SQLException {
-        conexion.getInstance();
+        if (Utils.dataBase[0]) {
+            conexion.getInstance();
+        }
         initComponents();
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);
@@ -38,7 +40,9 @@ public class RegistroConductor extends javax.swing.JFrame {
                 Utils.modificacionComponentes(!modoOscuro, jpnlInfoPerfil, jlblInfoPerfil, "Perfil", "Perfil");
 //                jlistFormulario.setBackground(modoOscuro ? new Color(81, 81, 81) : new Color(51, 51, 51));
                 jlistFormulario.setBackground(new Color(51, 51, 51));
-                conexion.listaPersonas("SELECT nombre, apellido FROM Persona WHERE tipo = 'Conductor'", jlistFormulario);
+                if (Utils.dataBase[0]) {
+                    conexion.listaPersonas("SELECT nombre, apellido FROM Persona WHERE tipo = 'Conductor'", jlistFormulario);
+                }
                 jlblCambioColor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/project/imagenes/" + (modoOscuro ? "Light" : "Dark") + "Mode.png")));
                 jlblPerfilMini.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/project/imagenes/MiniPerfil" + (modoOscuro ? "Oscuro" : "") + ".png")));
                 repaint();
@@ -522,10 +526,14 @@ public class RegistroConductor extends javax.swing.JFrame {
             int selectedIndex = jlistFormulario.getSelectedIndex();
             if (selectedIndex == -1) {
                 JOptionPane.showMessageDialog(null, "Por favor, seleccione una opción.");
-                return; 
+                return;
             }
-            PreparedStatement ps = conexion.ModificarPersonas(jlistFormulario);
-            Utils.cambioDeJframe(this, new ModificarConductor(!modoOscuro, ps));
+            if (Utils.dataBase[0]) {
+                PreparedStatement ps = conexion.ModificarPersonas(jlistFormulario);
+                Utils.cambioDeJframe(this, new ModificarConductor(!modoOscuro, ps));
+            } else {
+                Utils.cambioDeJframe(this, new ModificarConductor(!modoOscuro, null));
+            }
         } catch (SQLException ex) {
             Logger.getLogger(RegistroConductor.class.getName()).log(Level.SEVERE, null, ex);
         }

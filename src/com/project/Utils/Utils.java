@@ -24,6 +24,7 @@ import org.apache.logging.log4j.*;
 public class Utils {
 
     private static final Logger logger = LogManager.getLogger(Utils.class);
+    public static boolean[] dataBase = new boolean[1];
 
     /**
      * Almacena las coordenadas del mouse en el array mousePosition al presionar
@@ -111,10 +112,12 @@ public class Utils {
      * de logs.
      */
     public static void clickedExit() {
-        try {
+        if (dataBase[0]) {
+            try {
             conexion.getInstance().CerrarConnexion();
         } catch (SQLException ex) {
             logger.error("Error al cerrar la conexión: ", ex);
+        }
         }
         System.exit(0);
     }
@@ -224,8 +227,11 @@ public class Utils {
 
     public static String generarID(String persona, String consulta) throws SQLException {
         String id = "";
-        //int contador = 2;
-        int contador = conexion.contador(consulta);
+        int contador;
+        
+        if (Utils.dataBase[0]) contador = conexion.contador(consulta);
+        else contador = 2;
+        
         contador++;
         if (contador <= 9) {
             id = persona + "00000" + contador;
@@ -607,7 +613,7 @@ public class Utils {
         jlblparent.validate();
         jpnlparent.repaint();
     }
-
+    
     public static void cambioDeJframe(JFrame emisor, JFrame receptor) {
         receptor.setVisible(true);
         Timer timer = new Timer(950, e -> {

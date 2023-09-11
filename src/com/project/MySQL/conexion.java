@@ -35,9 +35,15 @@ public class conexion {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             conexion = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            Utils.dataBase[0] = true;
 //            JOptionPane.showMessageDialog(null, "conexion exitosa !!");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error: " + e);
+            JOptionPane.showMessageDialog(null, """
+                                                No se puedo iniciar la conexion a la base de datos.
+                                                Se iniciara el modo sin conexion.
+                                                Los cambios efectuados en el modo sin conexion no se guardan.
+                                                """);
+            Utils.dataBase[0] = false;
         }
         return conexion;
     }

@@ -25,7 +25,9 @@ public class IAdministrador extends javax.swing.JFrame {
     private ArrayList <String> cambiaColor = new ArrayList<>(Arrays.asList("jpnlDinamico","jlblAdministrador","jlblNombres","jpnlCerrarSesion"));
 
     public IAdministrador(boolean modoOscuro) throws SQLException {
-        conexion.getInstance();
+        if (Utils.dataBase[0]) {
+            conexion.getInstance();
+        }
         initComponents();
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);

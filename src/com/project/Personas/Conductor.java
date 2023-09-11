@@ -21,7 +21,7 @@ public class Conductor extends Persona{
     }
 
     public Conductor(int dni, String nombre, String apellido, String correo, int numero_telefonico, int edad, String ID_Conductor, String contraseña) {
-        super(dni, nombre, apellido, correo, numero_telefonico, edad);
+        super(nombre, apellido, correo, numero_telefonico, edad, dni, correo, contraseña);
         this.ID_Conductor = ID_Conductor;
         this.contraseña = contraseña; 
         Registro registro = new Registro();

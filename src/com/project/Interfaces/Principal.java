@@ -29,7 +29,9 @@ public class Principal extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);
-        conexion.getInstance();
+        if (Utils.dataBase[0]) {
+            conexion.getInstance();
+        }
 //        conexion.getInstance().CerrarConnexion();
     }
 
@@ -485,12 +487,13 @@ public class Principal extends javax.swing.JFrame {
         String[] campos = {"Usuario", "Contraseña"};
         String[] text = {"nombre de usuario", "contraseña"};
 
-        boolean camposValidos = !Utils.validarCamposInicioSesion(campos, text, this, modoOscuro);
+        boolean camposValidos = Utils.validarCamposInicioSesion(campos, text, this, modoOscuro);
 
         String persona = jtxtUsuario.getText().substring(0, 1).equalsIgnoreCase("A") ? "Administrador"
                 : jtxtUsuario.getText().substring(0, 1).equalsIgnoreCase("S") ? "Supervisor"
                 : jtxtUsuario.getText().substring(0, 1).equalsIgnoreCase("C") ? "Conductor" : "";
-
+        
+        if (Utils.dataBase[0]) {
         try {
             if (!persona.isEmpty()) {
                 camposValidos = conexion.inicioSesion(persona, "SELECT * FROM " + persona/*.toLowerCase()*/, jtxtUsuario.getText(), jpswContraseña.getPassword());
@@ -499,6 +502,7 @@ public class Principal extends javax.swing.JFrame {
             }
         } catch (SQLException ex) {
             Logger.getLogger(Principal.class.getName()).log(Level.SEVERE, null, ex);
+        }
         }
 
         if (camposValidos) {
