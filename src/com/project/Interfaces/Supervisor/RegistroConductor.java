@@ -24,7 +24,7 @@ public class RegistroConductor extends javax.swing.JFrame {
 
     public RegistroConductor(boolean modoOscuro) throws SQLException {
         if (Utils.dataBase[0]) {
-            conexion.getInstance();
+            conexion.getInstance();;
         }
         initComponents();
         setLocationRelativeTo(null);

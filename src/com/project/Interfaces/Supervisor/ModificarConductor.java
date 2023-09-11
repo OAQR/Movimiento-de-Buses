@@ -30,7 +30,7 @@ public class ModificarConductor extends javax.swing.JFrame {
     public ModificarConductor(boolean modoOscuro, PreparedStatement ps) throws SQLException {
         if (Utils.dataBase[0]) {
             conexion.getInstance();
-            rellenoDeCampos(ps);
+            rellenoDeCampos(ps);;
         }
         initComponents();
         setLocationRelativeTo(null);

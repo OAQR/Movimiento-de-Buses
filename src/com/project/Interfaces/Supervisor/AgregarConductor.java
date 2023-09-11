@@ -30,7 +30,7 @@ public class AgregarConductor extends javax.swing.JFrame {
     public AgregarConductor(boolean modoOscuro) throws SQLException {
         initComponents();
         if (Utils.dataBase[0]) {
-            conexion.getInstance();
+            conexion.getInstance();;
             jtxtID.setText(Utils.generarID("C", "SELECT MAX(idConductor) FROM Conductor"));
         } else jtxtID.setText(Utils.generarID("C", ""));
         
