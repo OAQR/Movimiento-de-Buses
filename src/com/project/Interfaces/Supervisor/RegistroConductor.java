@@ -71,7 +71,7 @@ public class RegistroConductor extends javax.swing.JFrame {
                             }
                             Utils.cambioColorJList(jlistFormulario);
                             jlistFormulario.setModel(model);
-                        } 
+                        }
                     }
                 } else {
 
@@ -85,7 +85,7 @@ public class RegistroConductor extends javax.swing.JFrame {
 
                         Utils.cambioColorJList(jlistFormulario);
                         jlistFormulario.setModel(model);
-                    } 
+                    }
                 }
 
                 jlblCambioColor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/project/imagenes/" + (modoOscuro ? "Light" : "Dark") + "Mode.png")));
@@ -424,7 +424,7 @@ public class RegistroConductor extends javax.swing.JFrame {
         jpnlImprimir.setForeground(new java.awt.Color(0, 0, 0));
         jpnlPrincipal.add(jpnlImprimir, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 530, 170, 30));
 
-        jcbOrdenamiento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Elegir Ordenamiento", "Ordenamiento Burbuja", "Item 2", "Item 3", "Item 4" }));
+        jcbOrdenamiento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Elegir Ordenamiento", "Burbuja", "Seleccion", "Insercion", "QuickSort", "MergeSort", "ShellSort" }));
         jcbOrdenamiento.setToolTipText("");
         jcbOrdenamiento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -696,13 +696,35 @@ public class RegistroConductor extends javax.swing.JFrame {
 
         if (seleccion == 1) {
             OrdenamientoDeDatos.ordenamientoBurbujaPorApellido();
+        } else if (seleccion == 2) {
+            OrdenamientoDeDatos.ordenamientoSeleccionPorNombre();
+        } else if (seleccion == 3) {
+            OrdenamientoDeDatos.ordenamientoInsercionPorCorreo();
+        } else if (seleccion == 4) {
+            OrdenamientoDeDatos.quickSortPorDNI();
+        } else if (seleccion == 5) {
+            OrdenamientoDeDatos.mergeSortPorNombre();
+        } else if (seleccion == 6) {
+            OrdenamientoDeDatos.shellSortPorNombre();
         }
 
         List<Persona> personasOrdenadas = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
         DefaultListModel<String> model = new DefaultListModel<>();
 
         for (Persona persona : personasOrdenadas) {
-            model.addElement(persona.getApellido() + ", " + persona.getNombre());
+            if (seleccion == 1) {
+                model.addElement(persona.getApellido() + ", " + persona.getNombre());
+            } else if (seleccion == 2) {
+                model.addElement(persona.getNombre() + ", " + persona.getApellido());
+            } else if (seleccion == 3) {
+                model.addElement(persona.getCorreo());
+            } else if (seleccion == 4) {
+                model.addElement(String.valueOf(persona.getDNI()));
+            } else if (seleccion == 5) {
+                model.addElement(persona.getNombre() + ", " + persona.getApellido());
+            } else if (seleccion == 6) {
+                model.addElement(persona.getNombre() + ", " + persona.getApellido());
+            }
         }
 
         jlistFormulario.setModel(model);
