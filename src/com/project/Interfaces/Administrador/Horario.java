@@ -22,7 +22,7 @@ public class Horario extends javax.swing.JFrame {
 
     public Horario(boolean modoOscuro) throws SQLException {
         if (Utils.dataBase[0]) {
-            conexion.getInstance();;
+            conexion.getInstance();
         }
         initComponents();
         setLocationRelativeTo(null);

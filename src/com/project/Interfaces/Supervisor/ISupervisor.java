@@ -26,7 +26,7 @@ public class ISupervisor extends javax.swing.JFrame {
 
     public ISupervisor(boolean modoOscuro) throws SQLException {
         if (Utils.dataBase[0]) {
-            conexion.getInstance();;
+            conexion.getInstance();
         }
         initComponents();
         setLocationRelativeTo(null);

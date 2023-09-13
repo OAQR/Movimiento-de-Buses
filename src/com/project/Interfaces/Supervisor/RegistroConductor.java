@@ -5,14 +5,20 @@
 package com.project.Interfaces.Supervisor;
 
 import com.project.MySQL.conexion;
+import com.project.Personas.Persona;
+import com.project.Utils.FicheroCSV;
+import com.project.Utils.OrdenamientoDeDatos;
 import com.project.Utils.Utils;
 import java.sql.*;
 import java.awt.Color;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -24,7 +30,7 @@ public class RegistroConductor extends javax.swing.JFrame {
 
     public RegistroConductor(boolean modoOscuro) throws SQLException {
         if (Utils.dataBase[0]) {
-            conexion.getInstance();;
+            conexion.getInstance();
         }
         initComponents();
         setLocationRelativeTo(null);
@@ -40,9 +46,48 @@ public class RegistroConductor extends javax.swing.JFrame {
                 Utils.modificacionComponentes(!modoOscuro, jpnlInfoPerfil, jlblInfoPerfil, "Perfil", "Perfil");
 //                jlistFormulario.setBackground(modoOscuro ? new Color(81, 81, 81) : new Color(51, 51, 51));
                 jlistFormulario.setBackground(new Color(51, 51, 51));
+
                 if (Utils.dataBase[0]) {
-                    conexion.listaPersonas("SELECT nombre, apellido FROM Persona WHERE tipo = 'Conductor'", jlistFormulario);
+                    List<Persona> personasDesdeBD = conexion.listaPersonas("SELECT * FROM Persona WHERE tipo = 'Conductor'");
+
+                    if (!personasDesdeBD.isEmpty()) {
+                        File archivoCSV = FicheroCSV.obtenerArchivoCSV();
+                        FicheroCSV.llenarDatosCSV(personasDesdeBD, archivoCSV);
+
+                        DefaultListModel<String> model = new DefaultListModel<>();
+                        for (Persona persona : personasDesdeBD) {
+                            model.addElement(persona.getApellido() + ", " + persona.getNombre());
+                        }
+                        Utils.cambioColorJList(jlistFormulario);
+                        jlistFormulario.setModel(model);
+                    } else {
+
+                        List<Persona> personasDesdeCSV = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+
+                        if (!personasDesdeCSV.isEmpty()) {
+                            DefaultListModel<String> model = new DefaultListModel<>();
+                            for (Persona persona : personasDesdeCSV) {
+                                model.addElement(persona.getApellido() + ", " + persona.getNombre());
+                            }
+                            Utils.cambioColorJList(jlistFormulario);
+                            jlistFormulario.setModel(model);
+                        } 
+                    }
+                } else {
+
+                    List<Persona> personasDesdeCSV = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+
+                    if (!personasDesdeCSV.isEmpty()) {
+                        DefaultListModel<String> model = new DefaultListModel<>();
+                        for (Persona persona : personasDesdeCSV) {
+                            model.addElement(persona.getApellido() + ", " + persona.getNombre());
+                        }
+
+                        Utils.cambioColorJList(jlistFormulario);
+                        jlistFormulario.setModel(model);
+                    } 
                 }
+
                 jlblCambioColor.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/project/imagenes/" + (modoOscuro ? "Light" : "Dark") + "Mode.png")));
                 jlblPerfilMini.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/project/imagenes/MiniPerfil" + (modoOscuro ? "Oscuro" : "") + ".png")));
                 repaint();
@@ -51,6 +96,16 @@ public class RegistroConductor extends javax.swing.JFrame {
             }
         });
         this.modoOscuro = !modoOscuro;
+    }
+
+    private String obtenerID(String nombre, String apellido) {
+        List<Persona> personas = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+        for (Persona persona : personas) {
+            if (persona.getNombre().equalsIgnoreCase(nombre) && persona.getApellido().equalsIgnoreCase(apellido)) {
+                return persona.getID();
+            }
+        }
+        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -83,6 +138,7 @@ public class RegistroConductor extends javax.swing.JFrame {
         jpnlBorrar = new javax.swing.JPanel();
         jlblImprimir = new javax.swing.JLabel();
         jpnlImprimir = new javax.swing.JPanel();
+        jcbOrdenamiento = new javax.swing.JComboBox<>();
         jscpFormulario = new javax.swing.JScrollPane();
         jlistFormulario = new javax.swing.JList<>();
         jpnlDinamico = new javax.swing.JPanel();
@@ -368,6 +424,15 @@ public class RegistroConductor extends javax.swing.JFrame {
         jpnlImprimir.setForeground(new java.awt.Color(0, 0, 0));
         jpnlPrincipal.add(jpnlImprimir, new org.netbeans.lib.awtextra.AbsoluteConstraints(435, 530, 170, 30));
 
+        jcbOrdenamiento.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Elegir Ordenamiento", "Ordenamiento Burbuja", "Item 2", "Item 3", "Item 4" }));
+        jcbOrdenamiento.setToolTipText("");
+        jcbOrdenamiento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jcbOrdenamientoActionPerformed(evt);
+            }
+        });
+        jpnlPrincipal.add(jcbOrdenamiento, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 530, 180, 30));
+
         jscpFormulario.setBorder(null);
 
         jlistFormulario.setFont(new java.awt.Font("Roboto", 0, 24)); // NOI18N
@@ -530,9 +595,14 @@ public class RegistroConductor extends javax.swing.JFrame {
             }
             if (Utils.dataBase[0]) {
                 PreparedStatement ps = conexion.ModificarPersonas(jlistFormulario);
-                Utils.cambioDeJframe(this, new ModificarConductor(!modoOscuro, ps));
+                Utils.cambioDeJframe(this, new ModificarConductor(!modoOscuro, ps, null));
             } else {
-                Utils.cambioDeJframe(this, new ModificarConductor(!modoOscuro, null));
+                String nombreApellidoSeleccionado = jlistFormulario.getSelectedValue();
+                String[] nombreApellidoArr = nombreApellidoSeleccionado.split(", ");
+                String apellido = nombreApellidoArr[0];
+                String nombre = nombreApellidoArr[1];
+                String id = obtenerID(nombre, apellido);
+                Utils.cambioDeJframe(this, new ModificarConductor(!modoOscuro, null, id));
             }
         } catch (SQLException ex) {
             Logger.getLogger(RegistroConductor.class.getName()).log(Level.SEVERE, null, ex);
@@ -553,8 +623,20 @@ public class RegistroConductor extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Por favor, seleccione una opción.");
             return;
         }
-        conexion.eliminarPersonas(jlistFormulario);
 
+        if (Utils.dataBase[0]) {
+            conexion.eliminarPersonas(jlistFormulario);
+        } else {
+            String nombreApellidoSeleccionado = jlistFormulario.getSelectedValue();
+            String[] nombreApellidoArr = nombreApellidoSeleccionado.split(", ");
+            String apellido = nombreApellidoArr[0];
+            String nombre = nombreApellidoArr[1];
+            String id = obtenerID(nombre, apellido);
+            FicheroCSV.eliminarPersonaCSV(id, FicheroCSV.obtenerArchivoCSV());
+        }
+
+        DefaultListModel<String> model = (DefaultListModel<String>) jlistFormulario.getModel();
+        model.remove(selectedIndex);
     }//GEN-LAST:event_jlblBorrarMouseClicked
 
     private void jlblCambioColorMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlblCambioColorMouseEntered
@@ -609,11 +691,30 @@ public class RegistroConductor extends javax.swing.JFrame {
         Utils.exitedBotonVerde(jlblImprimir);
     }//GEN-LAST:event_jlblImprimirMouseExited
 
-//    public static void main(String args[]) throws SQLException {
-//        Utils.iniciarJframe(new RegistroConductor(false));
-//    }
+    private void jcbOrdenamientoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jcbOrdenamientoActionPerformed
+        int seleccion = jcbOrdenamiento.getSelectedIndex();
+
+        if (seleccion == 1) {
+            OrdenamientoDeDatos.ordenamientoBurbujaPorApellido();
+        }
+
+        List<Persona> personasOrdenadas = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+        DefaultListModel<String> model = new DefaultListModel<>();
+
+        for (Persona persona : personasOrdenadas) {
+            model.addElement(persona.getApellido() + ", " + persona.getNombre());
+        }
+
+        jlistFormulario.setModel(model);
+
+    }//GEN-LAST:event_jcbOrdenamientoActionPerformed
+
+    public static void main(String args[]) throws SQLException {
+        Utils.iniciarJframe(new RegistroConductor(false));
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<String> jcbOrdenamiento;
     private javax.swing.JLabel jlblAgregar;
     private javax.swing.JLabel jlblBorrar;
     private javax.swing.JLabel jlblCambioColor;

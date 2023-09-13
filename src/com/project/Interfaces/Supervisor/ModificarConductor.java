@@ -5,14 +5,19 @@
 package com.project.Interfaces.Supervisor;
 
 import com.project.MySQL.conexion;
+import com.project.Personas.Persona;
 import java.sql.*;
 import com.project.Utils.Utils;
+import com.project.Utils.FicheroCSV;
+import static com.project.Utils.Utils.dataBase;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -27,13 +32,15 @@ public class ModificarConductor extends javax.swing.JFrame {
             "jlblContraseña", "jpswContraseña", "jsepContraseña", "jlblConfirmeContraseña", "jpswConfirmeContraseña",
             "jsepConfirmeContraseña", "jsepEmpresaSlogan", "jpnlModificar"));
 
-    public ModificarConductor(boolean modoOscuro, PreparedStatement ps) throws SQLException {
-        if (Utils.dataBase[0]) {
-            conexion.getInstance();
-            rellenoDeCampos(ps);;
-        }
+    public ModificarConductor(boolean modoOscuro, PreparedStatement ps, String id) throws SQLException {
         initComponents();
         setLocationRelativeTo(null);
+        if (ps != null) {
+            conexion.getInstance();
+            rellenoDeCampos(ps);
+        } else {
+            rellenoDeCampos(id);
+        }
         CambioColor(modoOscuro);
 
     }
@@ -59,27 +66,63 @@ public class ModificarConductor extends javax.swing.JFrame {
         this.modoOscuro = !modoOscuro;
     }
 
+    private void rellenoDeCampos(String idPersona) {
+        List<Persona> personas = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+        for (Persona persona : personas) {
+            if (persona.getID().equals(idPersona)) {
+                jtxtNombre.setText(persona.getNombre());
+                jtxtApellido.setText(persona.getApellido());
+                jtxtCorreo.setText(persona.getCorreo());
+                jtxtNumeroTelefonico.setText(String.valueOf(persona.getNumero_telefonico()));
+                jtxtDNI.setText(String.valueOf(persona.getDNI()));
+                jtxtEdad.setText(String.valueOf(persona.getEdad()));
+                jtxtID.setText(String.valueOf(persona.getID()));
+                jpswContraseña.setText(persona.getContrasena());
+                jpswConfirmeContraseña.setText(persona.getContrasena());
+                break; 
+            }
+        }
+    }
+
     private void rellenoDeCampos(PreparedStatement ps) {
         try {
-            ResultSet rs = ps.executeQuery();
+            if (Utils.dataBase[0]) {
+                ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                jtxtNombre.setText(rs.getString("nombre"));
-                jtxtApellido.setText(rs.getString("apellido"));
-                jtxtCorreo.setText(rs.getString("correo"));
-                jtxtNumeroTelefonico.setText(String.valueOf(rs.getInt("numero_telefonico")));
-                jtxtDNI.setText(String.valueOf(rs.getInt("DNI")));
-                jtxtEdad.setText(String.valueOf(rs.getInt("edad")));
-                jtxtID.setText(rs.getString("idConductor"));
-            }
-            rs.close();
+                if (rs.next()) {
+                    jtxtNombre.setText(rs.getString("nombre"));
+                    jtxtApellido.setText(rs.getString("apellido"));
+                    jtxtCorreo.setText(rs.getString("correo"));
+                    jtxtNumeroTelefonico.setText(String.valueOf(rs.getInt("numero_telefonico")));
+                    jtxtDNI.setText(String.valueOf(rs.getInt("DNI")));
+                    jtxtEdad.setText(String.valueOf(rs.getInt("edad")));
+                    jtxtID.setText(rs.getString("idConductor"));
+                }
+                rs.close();
 
-            ResultSet conductor = conexion.obtenerDatosTipo("C", jtxtID.getText()).executeQuery();
-            if (conductor.next()) {
-                jtxtID.setText(conductor.getString("idConductor"));
-                jpswContraseña.setText(conductor.getString("contraseña"));
+                ResultSet conductor = conexion.obtenerDatosTipo("C", jtxtID.getText()).executeQuery();
+                if (conductor.next()) {
+                    jtxtID.setText(conductor.getString("idConductor"));
+                    jpswContraseña.setText(conductor.getString("contraseña"));
+                    jpswConfirmeContraseña.setText(conductor.getString("contraseña"));
+                }
+                conductor.close();
+            } else {
+                List<Persona> personasDesdeCSV = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+
+                for (Persona persona : personasDesdeCSV) {
+                    if (persona.getID().equals(jtxtID.getText())) {
+                        jtxtNombre.setText(persona.getNombre());
+                        jtxtApellido.setText(persona.getApellido());
+                        jtxtCorreo.setText(persona.getCorreo());
+                        jtxtNumeroTelefonico.setText(String.valueOf(persona.getNumero_telefonico()));
+                        jtxtDNI.setText(String.valueOf(persona.getDNI()));
+                        jtxtEdad.setText(String.valueOf(persona.getEdad()));
+                        jpswContraseña.setText(persona.getContrasena());
+                        break; 
+                    }
+                }
             }
-            conductor.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -908,29 +951,50 @@ public class ModificarConductor extends javax.swing.JFrame {
             boolean camposValidos = Utils.validarCamposConductor(campos, text, this, modoOscuro);
 
             if (camposValidos) {
-                try {
-                    if (Utils.dataBase[0]) {
-                        PreparedStatement psConductor = conexion.cambiarContraseña("C");
-                        psConductor.setString(1, new String(jpswContraseña.getPassword()));
-                        System.out.println(jtxtID.getText());
-                        psConductor.setString(2, new String(jtxtID.getText()));
-                        psConductor.executeUpdate();
-                        psConductor.close();
 
-                        PreparedStatement psPersona = conexion.persona("UPDATE Persona SET nombre = ?, apellido = ?, correo = ?, numero_telefonico = ?, DNI = ?, edad = ? WHERE idConductor = ?");
-                        psPersona.setString(1, jtxtNombre.getText());
-                        psPersona.setString(2, jtxtApellido.getText());
-                        psPersona.setString(3, jtxtCorreo.getText());
-                        psPersona.setInt(4, Integer.parseInt(jtxtNumeroTelefonico.getText()));
-                        psPersona.setInt(5, Integer.parseInt(jtxtDNI.getText()));
-                        psPersona.setInt(6, Integer.parseInt(jtxtEdad.getText()));
-                        psPersona.setString(7, jtxtID.getText());
-                        psPersona.executeUpdate();
-                        psPersona.close();
+                if (dataBase[0]) {
+                    try {
+                        if (Utils.dataBase[0]) {
+                            PreparedStatement psConductor = conexion.cambiarContraseña("C");
+                            psConductor.setString(1, new String(jpswContraseña.getPassword()));
+                            System.out.println(jtxtID.getText());
+                            psConductor.setString(2, new String(jtxtID.getText()));
+                            psConductor.executeUpdate();
+                            psConductor.close();
+
+                            PreparedStatement psPersona = conexion.persona("UPDATE Persona SET nombre = ?, apellido = ?, correo = ?, numero_telefonico = ?, DNI = ?, edad = ? WHERE idConductor = ?");
+                            psPersona.setString(1, jtxtNombre.getText());
+                            psPersona.setString(2, jtxtApellido.getText());
+                            psPersona.setString(3, jtxtCorreo.getText());
+                            psPersona.setInt(4, Integer.parseInt(jtxtNumeroTelefonico.getText()));
+                            psPersona.setInt(5, Integer.parseInt(jtxtDNI.getText()));
+                            psPersona.setInt(6, Integer.parseInt(jtxtEdad.getText()));
+                            psPersona.setString(7, jtxtID.getText());
+                            psPersona.executeUpdate();
+                            psPersona.close();
+                        }
+                        List<Persona> personasDesdeCSV = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+                        Utils.cambioDeJframe(this, new RegistroConductor(!modoOscuro));
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
+
+                } else {
+                    List<Persona> personas = FicheroCSV.cargarDatosCSV(FicheroCSV.obtenerArchivoCSV());
+                    for (Persona persona : personas) {
+                        if (persona.getID().equals(jtxtID.getText())) {
+                            persona.setNombre(jtxtNombre.getText());
+                            persona.setApellido(jtxtApellido.getText());
+                            persona.setCorreo(jtxtCorreo.getText());
+                            persona.setNumero_telefonico(Integer.parseInt(jtxtNumeroTelefonico.getText()));
+                            persona.setDNI(Integer.parseInt(jtxtDNI.getText()));
+                            persona.setEdad(Integer.parseInt(jtxtEdad.getText()));
+                            persona.setContrasena(new String(jpswContraseña.getPassword()));
+                            break; 
+                        }
+                    }
+                    FicheroCSV.guardarCambiosCSV(personas, FicheroCSV.obtenerArchivoCSV());
                     Utils.cambioDeJframe(this, new RegistroConductor(!modoOscuro));
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (Exception ex) {

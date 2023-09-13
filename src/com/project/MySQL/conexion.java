@@ -4,9 +4,12 @@
  */
 package com.project.MySQL;
 
+import com.project.Personas.Persona;
 import com.project.Utils.Utils;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -77,14 +80,15 @@ public class conexion {
                 if (!rs.getString("id" + persona).equalsIgnoreCase(usuario)) {
                     JOptionPane.showMessageDialog(null, "Usuario incorrecto");
                     personaValida = false;
-                    
-                }else{
-                char[] contra = rs.getString("Contraseña").toCharArray();
-                if (!Arrays.equals(contra, contraseña)) {
-                    JOptionPane.showMessageDialog(null, "Contraseña incorrecta");
-                    personaValida = false;
+
+                } else {
+                    char[] contra = rs.getString("Contraseña").toCharArray();
+                    if (!Arrays.equals(contra, contraseña)) {
+                        JOptionPane.showMessageDialog(null, "Contraseña incorrecta");
+                        personaValida = false;
+                    }
+                    Arrays.fill(contra, '\0');
                 }
-                Arrays.fill(contra, '\0');}
             }
         }
         return personaValida;
@@ -93,10 +97,14 @@ public class conexion {
     public static PreparedStatement tipoPersona(String tipo) throws SQLException {
         String query;
         switch (tipo) {
-            case "A" -> query = "INSERT INTO Administrador (idAdministrador, contraseña) VALUES (?,?)";
-            case "S" -> query = "INSERT INTO Supervisor (idSupervisor, contraseña) VALUES (?,?)";
-            case "C" -> query = "INSERT INTO Conductor (idConductor, contraseña) VALUES (?,?)";
-            default -> throw new IllegalArgumentException("Tipo de persona inválido");
+            case "A" ->
+                query = "INSERT INTO Administrador (idAdministrador, contraseña) VALUES (?,?)";
+            case "S" ->
+                query = "INSERT INTO Supervisor (idSupervisor, contraseña) VALUES (?,?)";
+            case "C" ->
+                query = "INSERT INTO Conductor (idConductor, contraseña) VALUES (?,?)";
+            default ->
+                throw new IllegalArgumentException("Tipo de persona inválido");
         }
         return conexion.prepareStatement(query);
     }
@@ -104,11 +112,15 @@ public class conexion {
     public static PreparedStatement cambiarContraseña(String tipo) throws SQLException {
         String query;
         switch (tipo) {
-            case "A" -> query = "UPDATE Administrador SET contraseña = ? WHERE idAdministrador = ?";
-            case "S" -> query = "UPDATE Supervisor SET contraseña = ? WHERE idSupervisor = ?";
-            case "C" -> query = "UPDATE Conductor SET contraseña = ? WHERE idConductor = ?";
-            default -> throw new IllegalArgumentException("Tipo de persona inválido");
-                    }
+            case "A" ->
+                query = "UPDATE Administrador SET contraseña = ? WHERE idAdministrador = ?";
+            case "S" ->
+                query = "UPDATE Supervisor SET contraseña = ? WHERE idSupervisor = ?";
+            case "C" ->
+                query = "UPDATE Conductor SET contraseña = ? WHERE idConductor = ?";
+            default ->
+                throw new IllegalArgumentException("Tipo de persona inválido");
+        }
         return conexion.prepareStatement(query);
     }
 
@@ -116,25 +128,53 @@ public class conexion {
         return conexion.prepareStatement(query);
     }
 
-    public static void listaPersonas(String consulta, JList<String> jlist) {
-        try {
-            ps = conexion.prepareStatement(consulta);
-            rs = ps.executeQuery();
-
-            DefaultListModel<String> model = new DefaultListModel<>();
-
-            while (rs.next()) {
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
-                model.addElement(apellido + ", " + nombre);
-            }
-
-            Utils.cambioColorJList(jlist);
-            jlist.setModel(model);
-        } catch (SQLException e) {
-            e.printStackTrace();
+//    public static void listaPersonas(String consulta, JList<String> jlist) {
+//        try {
+//            ps = conexion.prepareStatement(consulta);
+//            rs = ps.executeQuery();
+//
+//            DefaultListModel<String> model = new DefaultListModel<>();
+//
+//            while (rs.next()) {
+//                String nombre = rs.getString("nombre");
+//                String apellido = rs.getString("apellido");
+//                model.addElement(apellido + ", " + nombre);
+//            }
+//
+//            Utils.cambioColorJList(jlist);
+//            jlist.setModel(model);
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//    }
+    
+    public static List<Persona> listaPersonas(String consulta) {
+    List<Persona> personas = new ArrayList<>();
+    
+    try {
+        ps = conexion.prepareStatement(consulta);
+        rs = ps.executeQuery();
+        
+        while (rs.next()) {
+            String nombre = rs.getString("nombre");
+            String apellido = rs.getString("apellido");
+            String correo = rs.getString("correo");
+            int numeroTelefonico = rs.getInt("numero_telefonico");
+            int edad = rs.getInt("edad");
+            int dni = rs.getInt("DNI");
+            String id = rs.getString("ID");
+            String contrasena = rs.getString("contrasena");
+            
+            Persona persona = new Persona(nombre, apellido, correo, numeroTelefonico, edad, dni, id, contrasena);
+            personas.add(persona);
         }
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    
+    return personas;
+}
+
 
     public static void eliminarPersonas(JList<String> jlist) {
         try {
@@ -201,7 +241,7 @@ public class conexion {
                 String nombre = nombreApellidoArr[1];
 
                 query = "SELECT * FROM Persona WHERE apellido = ? AND nombre = ?";
-                PreparedStatement statement =                 conexion.prepareStatement(query);
+                PreparedStatement statement = conexion.prepareStatement(query);
                 statement.setString(1, apellido);
                 statement.setString(2, nombre);
                 return statement;
@@ -216,10 +256,14 @@ public class conexion {
         String query = "";
         try {
             switch (tipo) {
-                case "A" -> query = "SELECT idAdministrador, contraseña FROM Administrador WHERE idAdministrador = ?";
-                case "S" -> query = "SELECT idSupervisor, contraseña FROM Supervisor WHERE idSupervisor = ?";
-                case "C" -> query = "SELECT idConductor, contraseña FROM Conductor WHERE idConductor = ?";
-                default -> throw new IllegalArgumentException("Tipo de persona inválido");
+                case "A" ->
+                    query = "SELECT idAdministrador, contraseña FROM Administrador WHERE idAdministrador = ?";
+                case "S" ->
+                    query = "SELECT idSupervisor, contraseña FROM Supervisor WHERE idSupervisor = ?";
+                case "C" ->
+                    query = "SELECT idConductor, contraseña FROM Conductor WHERE idConductor = ?";
+                default ->
+                    throw new IllegalArgumentException("Tipo de persona inválido");
             }
             PreparedStatement statement = conexion.prepareStatement(query);
             statement.setString(1, ID);

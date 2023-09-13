@@ -30,7 +30,7 @@ public class Principal extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);
         if (Utils.dataBase[0]) {
-            conexion.getInstance();;
+            conexion.getInstance();
         }
 //        conexion.getInstance().CerrarConnexion();
     }

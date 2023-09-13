@@ -5,12 +5,15 @@
 package com.project.Interfaces.Supervisor;
 
 import com.project.MySQL.conexion;
+import com.project.Personas.Persona;
+import com.project.Utils.FicheroCSV;
 import java.sql.*;
 import com.project.Utils.Utils;
 import java.awt.Color;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -30,10 +33,12 @@ public class AgregarConductor extends javax.swing.JFrame {
     public AgregarConductor(boolean modoOscuro) throws SQLException {
         initComponents();
         if (Utils.dataBase[0]) {
-            conexion.getInstance();;
+            conexion.getInstance();
             jtxtID.setText(Utils.generarID("C", "SELECT MAX(idConductor) FROM Conductor"));
-        } else jtxtID.setText(Utils.generarID("C", ""));
-        
+        } else {
+            jtxtID.setText(Utils.generarID("C", ""));
+        }
+
         setLocationRelativeTo(null);
         CambioColor(modoOscuro);
     }
@@ -881,8 +886,8 @@ public class AgregarConductor extends javax.swing.JFrame {
             boolean camposValidos = Utils.validarCamposConductor(campos, text, this, modoOscuro);
 
             if (camposValidos) {
-                try {
-                    if (Utils.dataBase[0]) {
+                if (Utils.dataBase[0]) {
+                    try {
                         PreparedStatement psConductor = conexion.tipoPersona("C");
                         psConductor.setString(1, jtxtID.getText());
                         psConductor.setString(2, new String(jpswContraseña.getPassword()));
@@ -900,13 +905,26 @@ public class AgregarConductor extends javax.swing.JFrame {
                         psPersona.setString(8, jtxtID.getText());
                         psPersona.executeUpdate();
                         psPersona.close();
+
+                    } catch (Exception e) {
+                        JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     }
+                } else {
+                    Persona nuevaPersona = new Persona(
+                            jtxtNombre.getText(),
+                            jtxtApellido.getText(),
+                            jtxtCorreo.getText(),
+                            Integer.parseInt(jtxtNumeroTelefonico.getText()),
+                            Integer.parseInt(jtxtDNI.getText()),
+                            Integer.parseInt(jtxtEdad.getText()),
+                            jtxtID.getText(),
+                            new String(jpswContraseña.getPassword())
+                    );
+
+                    FicheroCSV.agregarPersonaCSV(nuevaPersona, FicheroCSV.obtenerArchivoCSV());
 
                     Utils.cambioDeJframe(this, new RegistroConductor(!modoOscuro));
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
             }
         } catch (Exception ex) {
             Logger.getLogger(AgregarConductor.class.getName()).log(Level.SEVERE, null, ex);

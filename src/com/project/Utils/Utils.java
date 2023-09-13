@@ -24,7 +24,7 @@ import org.apache.logging.log4j.*;
 public class Utils {
 
     private static final Logger logger = LogManager.getLogger(Utils.class);
-    public static boolean[] dataBase = new boolean[1];;
+    public static boolean[] dataBase = new boolean[1];
 
     /**
      * Almacena las coordenadas del mouse en el array mousePosition al presionar
@@ -616,7 +616,7 @@ public class Utils {
     
     public static void cambioDeJframe(JFrame emisor, JFrame receptor) {
         receptor.setVisible(true);
-        Timer timer = new Timer(950, e -> {
+        Timer timer = new Timer(500, e -> {
             emisor.dispose();
         });
         timer.start();

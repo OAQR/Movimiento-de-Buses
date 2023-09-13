@@ -26,7 +26,7 @@ public class IAdministrador extends javax.swing.JFrame {
 
     public IAdministrador(boolean modoOscuro) throws SQLException {
         if (Utils.dataBase[0]) {
-            conexion.getInstance();;
+            conexion.getInstance();
         }
         initComponents();
         setLocationRelativeTo(null);
