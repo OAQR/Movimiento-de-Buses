@@ -39,7 +39,6 @@ El sistema se basa en una arquitectura de tres capas que separa la presentación
 2.  **Capa de Lógica de Negocio:** Implementa las reglas y funcionalidades del sistema, como la validación de datos, la gestión de roles y la coordinación de operaciones.
 3.  **Capa de Acceso a Datos:** Se encarga de la comunicación con la base de datos MySQL y de las operaciones de lectura/escritura en archivos CSV, abstrayendo el origen de los datos del resto de la aplicación.
 
-*(Opcional: Si tienes capturas de pantalla, puedes agregarlas aquí)*
 ### Diagrama de Flujo de Autenticación
 ![Diagrama de Flujo de Autenticación](images/Flujo de Autenticación.svg)
 
@@ -48,10 +47,8 @@ El sistema se basa en una arquitectura de tres capas que separa la presentación
 
 ## Cómo Empezar
 
-*(Esta sección es una plantilla. Debes ajustarla a tu proyecto específico)*
-
 ### Prerrequisitos
-*   JDK 8 o superior.
+*   JDK 17 o superior.
 *   Servidor de base de datos MySQL.
 *   Un IDE de Java como IntelliJ IDEA o Eclipse.
 
