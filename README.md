@@ -40,7 +40,7 @@ El sistema se basa en una arquitectura de tres capas que separa la presentación
 3.  **Capa de Acceso a Datos:** Se encarga de la comunicación con la base de datos MySQL y de las operaciones de lectura/escritura en archivos CSV, abstrayendo el origen de los datos del resto de la aplicación.
 
 ### Diagrama de Flujo de Autenticación
-![Diagrama de Flujo de Autenticación](images/Flujo de Autenticación.svg)
+![Diagrama de Flujo de Autenticación](images/Flujo%20de%20Autenticación.svg)
 
 ### Diagrama del Modelo de Datos
 ![Data Model](MODELO_DE_DATOS)
