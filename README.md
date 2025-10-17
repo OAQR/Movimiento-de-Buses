@@ -41,7 +41,7 @@ El sistema se basa en una arquitectura de tres capas que separa la presentación
 
 *(Opcional: Si tienes capturas de pantalla, puedes agregarlas aquí)*
 ### Diagrama de Flujo de Autenticación
-![Auth Flow](images/Flujo de Autenticación)
+![Diagrama de Flujo de Autenticación](images/Flujo de Autenticación.svg)
 
 ### Diagrama del Modelo de Datos
 ![Data Model](MODELO_DE_DATOS)
