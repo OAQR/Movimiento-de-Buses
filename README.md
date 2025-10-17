@@ -3,13 +3,13 @@
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
 
-## 📜 Descripción General
+## Descripción General
 
 **Movimiento de Buses** es una aplicación de escritorio robusta desarrollada en Java Swing, diseñada para la gestión integral de una flota de autobuses. El sistema ofrece una solución completa para administrar conductores, horarios y buses, con un sistema de autenticación basado en roles que garantiza un acceso seguro y permisos diferenciados para cada tipo de usuario.
 
 El proyecto destaca por su arquitectura modular, su sistema de almacenamiento dual (MySQL y CSV) para garantizar la disponibilidad de los datos, y una interfaz de usuario limpia y personalizable con temas claro y oscuro.
 
-## ✨ Características Principales
+## Características Principales
 
 *   **Autenticación y Roles de Usuario:** Sistema de inicio de sesión seguro que asigna roles a los usuarios (Administrador, Supervisor, Conductor), cada uno con su propia interfaz y permisos específicos.
 *   **Gestión de Conductores (CRUD):** Funcionalidad completa para registrar, consultar, modificar y eliminar conductores del sistema.
@@ -23,7 +23,7 @@ El proyecto destaca por su arquitectura modular, su sistema de almacenamiento du
 *   **Sistema de Temas Dinámico:** Permite al usuario cambiar entre un tema claro y uno oscuro en tiempo real, mejorando la experiencia de usuario.
 *   **Arquitectura Modular:** El código está organizado siguiendo principios de separación de responsabilidades, con una clara distinción entre la interfaz de usuario, la lógica de negocio y el acceso a datos.
 
-## 🛠️ Tecnologías y Herramientas
+## Tecnologías y Herramientas
 
 *   **Lenguaje de Programación:** Java
 *   **Framework de UI:** Java Swing
@@ -31,7 +31,7 @@ El proyecto destaca por su arquitectura modular, su sistema de almacenamiento du
 *   **Conectividad de Base de Datos:** JDBC
 *   **Patrones de Diseño:** Singleton (para la conexión a la base de datos), Modelo-Vista-Controlador (para la estructura de la aplicación).
 
-## 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 El sistema se basa en una arquitectura de tres capas que separa la presentación, la lógica y los datos.
 
@@ -41,12 +41,12 @@ El sistema se basa en una arquitectura de tres capas que separa la presentación
 
 *(Opcional: Si tienes capturas de pantalla, puedes agregarlas aquí)*
 ### Diagrama de Flujo de Autenticación
-![Auth Flow](URL_A_TU_IMAGEN_DE_AUTENTICACION)
+![Auth Flow](IMAGEN_DE_AUTENTICACION)
 
 ### Diagrama del Modelo de Datos
-![Data Model](URL_A_TU_IMAGEN_DEL_MODELO_DE_DATOS)
+![Data Model](MODELO_DE_DATOS)
 
-## 🚀 Cómo Empezar
+## Cómo Empezar
 
 *(Esta sección es una plantilla. Debes ajustarla a tu proyecto específico)*
 
