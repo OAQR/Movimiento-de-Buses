@@ -104,7 +104,7 @@ flowchart TD
 
 1.  **Clona el repositorio:**
     ```bash
-    git clone <URL_DEL_REPOSITORIO>
+    git clone https://github.com/OAQR/Movimiento-de-Buses
     ```
 
 2.  **Configura la base de datos:**
